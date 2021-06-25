@@ -18,3 +18,9 @@ THE_DICT['a']
 print("---------- %s seconds for entry query runtime ---------" % (time.time() - START_TIME_EXTRACT))
 # print total runtime
 print("---------- %s seconds total runtime ---------" % (time.time() - START_TIME_UNPICKLE))
+
+# output from lifebook-a557
+# >>> ---------- libraries loaded, starting process ---------------
+# ------- 0.09665250778198242 seconds for pickle-loading -------------
+# ---------- 9.5367431640625e-07 seconds for entry query runtime ---------
+# ---------- 0.09670186042785645 seconds total runtime ---------
