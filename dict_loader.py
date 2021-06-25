@@ -33,15 +33,14 @@ print("--- %s seconds for entry query runtime (numpy) ---------" % (time.time() 
 # print total runtime
 print("---------- %s seconds total runtime ---------" % (time.time() - ABSOLUTE_START_TIME))
 
-
 # output from lifebook-a557
 # >>> ---------- libraries loaded, starting process ---------------
-# ------- 0.11948919296264648 seconds for pickle-loading (sympy) ----
-# --- 1.1920928955078125e-06 seconds for entry query runtime (sympy) ---------
-# ------- 0.04269909858703613 seconds for pickle-loading (numpy) ----
-# --- 1.430511474609375e-06 seconds for entry query runtime (numpy) ---------
-# ---------- 0.1622757911682129 seconds total runtime ---------
+# ------- 0.17052459716796875 seconds for pickle-loading (sympy) ----
+# --- 1.9073486328125e-06 seconds for entry query runtime (sympy) ---------
+# ------- 0.013314247131347656 seconds for pickle-loading (numpy) ----
+# --- 1.1920928955078125e-06 seconds for entry query runtime (numpy) ---------
+# ---------- 0.18392539024353027 seconds total runtime ---------
 
 # dired about loaded files
-# -rw-r--r--  1 daniel users 41623417 25. Jun 03:40 dictionary_numpy.p
-# -rw-r--r--  1 daniel users 10423795 25. Jun 03:40 dictionary_sympy.p
+# -rw-r--r--  1 daniel users 41623417 25. Jun 03:59 dictionary_numpy.p
+# -rw-r--r--  1 daniel users 10423795 25. Jun 03:59 dictionary_sympy.p

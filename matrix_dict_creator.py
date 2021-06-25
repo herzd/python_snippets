@@ -1,5 +1,4 @@
 import sympy
-from sympy import *
 import string
 import json
 import pickle
@@ -18,10 +17,10 @@ THE_DICT_SYMPY = dict.fromkeys(list(string.ascii_letters))
 print("---------- %s seconds for dict-initiation ---------" % (time.time() - START_TIME_SYMPY))
 # create dictionary
 START_TIME_DICT_CREATION = time.time()
-for KEY in THE_DICT.keys():
+for KEY in THE_DICT_SYMPY.keys():
     VALUE_LIST = []
     for MATRIX in range(10):
-        VALUE_LIST.append(ones(100,100))
+        VALUE_LIST.append(sympy.ones(100,100))
     THE_DICT_SYMPY[KEY] = VALUE_LIST
 print("----- %s seconds for dict-creation (sympy) -----" % (time.time() - START_TIME_DICT_CREATION))
 
@@ -46,7 +45,7 @@ THE_DICT_NUMPY = dict.fromkeys(list(string.ascii_letters))
 print("---------- %s seconds for dict-initiation ---------" % (time.time() - START_TIME_NUMPY))
 
 START_TIME_DICT_CREATION = time.time()
-for KEY in THE_DICT.keys():
+for KEY in THE_DICT_NUMPY.keys():
     VALUE_LIST = []
     for MATRIX in range(10):
         VALUE_LIST.append(numpy.ones((100,100)))
@@ -71,17 +70,16 @@ print("---------- %s seconds total runtime ---------" % (time.time() - ABSOLUTE_
 
 # output from lifebook a-557
 # >>> ---------- libraries loaded, starting process ---------------
-# ---------- 0.012186288833618164 seconds for dict-initiation ---------
-# ----- 15.842413663864136 seconds for dict-creation (sympy) -----
-# ---------- 0.08799481391906738 seconds for pickling (sympy) ---------
-# ---- 8.106231689453125e-06 seconds for entry query runtime (sympy) -------
-# ---------- 0.0005838871002197266 seconds for dict-initiation ---------
-# -------- 0.011739015579223633 seconds for dict-creation (numpy) -----
-# ---------- 0.0661773681640625 seconds for pickling (numpy) ---------
-# ------ 1.430511474609375e-06 seconds for entry query runtime (numpy) ----
-# ---------- 16.021559715270996 seconds total runtime ---------
+# ---------- 0.010279417037963867 seconds for dict-initiation ---------
+# ----- 12.497594594955444 seconds for dict-creation (sympy) -----
+# ---------- 0.07930898666381836 seconds for pickling (sympy) ---------
+# ---- 2.6226043701171875e-06 seconds for entry query runtime (sympy) -------
+# ---------- 2.7894973754882812e-05 seconds for dict-initiation ---------
+# -------- 0.023260831832885742 seconds for dict-creation (numpy) -----
+# ---------- 0.05336165428161621 seconds for pickling (numpy) ---------
+# ------ 2.1457672119140625e-06 seconds for entry query runtime (numpy) ----
+# ---------- 12.664129734039307 seconds total runtime ---------
 
 # dired about created files
-# -rw-r--r--  1 daniel users 41623417 25. Jun 03:32 dictionary_numpy.p
-# -rw-r--r--  1 daniel users 10423795 25. Jun 03:32 dictionary_sympy.p
-
+# -rw-r--r--  1 daniel users 41623417 25. Jun 03:59 dictionary_numpy.p
+# -rw-r--r--  1 daniel users 10423795 25. Jun 03:59 dictionary_sympy.p
