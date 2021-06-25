@@ -24,3 +24,6 @@ print("---------- %s seconds total runtime ---------" % (time.time() - START_TIM
 # ------- 0.09665250778198242 seconds for pickle-loading -------------
 # ---------- 9.5367431640625e-07 seconds for entry query runtime ---------
 # ---------- 0.09670186042785645 seconds total runtime ---------
+# dired about loaded file
+#  -rw-r--r--  1 daniel users 10423795 25. Jun 02:16 dictionary.p
+

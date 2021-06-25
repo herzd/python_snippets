@@ -48,4 +48,5 @@ print("---------- %s seconds total runtime ---------" % (time.time() - ABSOLUTE_
 # ---------- 0.06589651107788086 seconds for pickling ---------
 # ---------- 2.86102294921875e-06 seconds for entry query runtime ---------
 # ---------- 12.262035131454468 seconds total runtime ---------
-
+# dired about created file
+#  -rw-r--r--  1 daniel users 10423795 25. Jun 02:16 dictionary.p
