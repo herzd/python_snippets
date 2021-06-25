@@ -31,10 +31,7 @@ with open("../dictionary_sympy.p", "wb") as PICKLE_DESTINATION:
     pickle.dump(THE_DICT_SYMPY, PICKLE_DESTINATION)
 print("---------- %s seconds for pickling (sympy) ---------" % (time.time() - START_TIME_PICKLE))
 
-# save dictionary to json-file -- DOES NOT WORK for 'MutableDenseMatrix' object type
-# will need modification to do this
-# with open("dictionary.json", "w") as JSON_DESTINATION:
-#     json.dump(THE_DICT, JSON_DESTINATION)
+# Object of type MutableDenseMatrix is not JSON serializable
 
 # query one dictionary entry
 START_TIME_EXTRACT = time.time()
