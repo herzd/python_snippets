@@ -7,23 +7,41 @@ import time
 import numpy
 
 print("---------- libraries loaded, starting process ---------------")
-START_TIME_UNPICKLE = time.time()
-with open("dictionary.p", "rb") as PICKLE_ORIGIN:
-    THE_DICT = pickle.load(PICKLE_ORIGIN)
-print("------- %s seconds for pickle-loading -------------" % (time.time() - START_TIME_UNPICKLE))
+ABSOLUTE_START_TIME = time.time()
+
+# unpickle sympy matrix dictionary
+START_TIME_UNPICKLE_SYMPY = time.time()
+with open("../dictionary_sympy.p", "rb") as PICKLE_ORIGIN:
+    THE_DICT_SYMPY = pickle.load(PICKLE_ORIGIN)
+print("------- %s seconds for pickle-loading (sympy) ----" % (time.time() - START_TIME_UNPICKLE_SYMPY))
 
 # query one dictionary entry
 START_TIME_EXTRACT = time.time()
-THE_DICT['a']
-print("---------- %s seconds for entry query runtime ---------" % (time.time() - START_TIME_EXTRACT))
+THE_DICT_SYMPY['a']
+print("--- %s seconds for entry query runtime (sympy) ---------" % (time.time() - START_TIME_EXTRACT))
+
+# unpickle numpy matrix dictionary
+START_TIME_UNPICKLE_NUMPY = time.time()
+with open("../dictionary_numpy.p", "rb") as PICKLE_ORIGIN:
+    THE_DICT_NUMPY = pickle.load(PICKLE_ORIGIN)
+print("------- %s seconds for pickle-loading (numpy) ----" % (time.time() - START_TIME_UNPICKLE_NUMPY))
+
+# query one dictionary entry
+START_TIME_EXTRACT = time.time()
+THE_DICT_NUMPY['a']
+print("--- %s seconds for entry query runtime (numpy) ---------" % (time.time() - START_TIME_EXTRACT))
 # print total runtime
-print("---------- %s seconds total runtime ---------" % (time.time() - START_TIME_UNPICKLE))
+print("---------- %s seconds total runtime ---------" % (time.time() - ABSOLUTE_START_TIME))
+
 
 # output from lifebook-a557
 # >>> ---------- libraries loaded, starting process ---------------
-# ------- 0.09665250778198242 seconds for pickle-loading -------------
-# ---------- 9.5367431640625e-07 seconds for entry query runtime ---------
-# ---------- 0.09670186042785645 seconds total runtime ---------
-# dired about loaded file
-#  -rw-r--r--  1 daniel users 10423795 25. Jun 02:16 dictionary.p
+# ------- 0.11948919296264648 seconds for pickle-loading (sympy) ----
+# --- 1.1920928955078125e-06 seconds for entry query runtime (sympy) ---------
+# ------- 0.04269909858703613 seconds for pickle-loading (numpy) ----
+# --- 1.430511474609375e-06 seconds for entry query runtime (numpy) ---------
+# ---------- 0.1622757911682129 seconds total runtime ---------
 
+# dired about loaded files
+# -rw-r--r--  1 daniel users 41623417 25. Jun 03:40 dictionary_numpy.p
+# -rw-r--r--  1 daniel users 10423795 25. Jun 03:40 dictionary_sympy.p
