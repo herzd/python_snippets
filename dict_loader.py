@@ -1,5 +1,4 @@
 import sympy
-from sympy import *
 import string
 import json
 import pickle
