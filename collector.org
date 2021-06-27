@@ -39,11 +39,11 @@
     #+end_src
 
     #+RESULTS: numpy-matrix-dict-creator
-    : 7.62939453125e-06 seconds for dict-initiation
-    : 1.246091604232788 seconds for dict-creation (numpy)
-    : 9.852518796920776 seconds for pickling (numpy)
-    : 7.3909759521484375e-06 seconds for entry query runtime (numpy)
-    : 11.09868836402893 seconds total runtime
+    : 7.867813110351562e-06 seconds for dict-initiation
+    : 1.2438461780548096 seconds for dict-creation
+    : 10.470331907272339 seconds for pickling
+    : 2.6226043701171875e-06 seconds for entry query runtime
+    : 11.714255332946777 seconds total runtime
 
     This is the loader for the created dictionary.
 
@@ -69,9 +69,9 @@
     #+end_src
 
     #+RESULTS: numpy-matrix-dict-loader
-    : 7.708972454071045 seconds for pickle-loading
-    : 1.1920928955078125e-06 seconds for entry query runtime
-    : 7.7090020179748535 seconds total runtime
+    : 8.135382890701294 seconds for pickle-loading
+    : 9.5367431640625e-07 seconds for entry query runtime
+    : 8.135413408279419 seconds total runtime
 
     And this is the created pickle-file.
 
@@ -83,6 +83,6 @@
     #+end_src
 
     #+RESULTS: check-numpy-matrix-dict-pickle
-    : -rw-r--r-- 1 daniel users 990M 27. Jun 04:53 ../numpy_matrix_dict.p
+    : -rw-r--r-- 1 daniel users 990M 27. Jun 05:10 ../numpy_matrix_dict.p
 
 
