@@ -7,7 +7,6 @@ import time
 
 OUTFILE = OUTPUT
 ABSOLUTE_START_TIME = time.time()
-THE_DICT_NUMPY = {}
 THE_DICT_NUMPY = dict.fromkeys(list(string.ascii_letters))
 print("%s seconds for dict-initiation" % (time.time() - ABSOLUTE_START_TIME))
 START_TIME_DICT_CREATION = time.time()
@@ -23,5 +22,5 @@ with open(OUTFILE, "wb") as PICKLE_DESTINATION:
 print("%s seconds for pickling" % (time.time() - START_TIME_PICKLE))
 START_TIME_QUERY = time.time()
 THE_DICT_NUMPY['a']
-print("%s seconds for entry query runtime" % (time.time() - START_TIME_QUERY))
+print("%s seconds for entry query" % (time.time() - START_TIME_QUERY))
 print("%s seconds total runtime" % (time.time() - ABSOLUTE_START_TIME))

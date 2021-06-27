@@ -13,5 +13,5 @@ with open(INFILE, "rb") as PICKLE_ORIGIN:
 print("%s seconds for pickle-loading" % (time.time() - START_TIME_UNPICKLE_NUMPY))
 START_TIME_EXTRACT = time.time()
 THE_DICT_NUMPY['a']
-print("%s seconds for entry query runtime" % (time.time() - START_TIME_EXTRACT))
+print("%s seconds for entry query" % (time.time() - START_TIME_EXTRACT))
 print("%s seconds total runtime" % (time.time() - ABSOLUTE_START_TIME))
