@@ -66,18 +66,17 @@ This is the loader for the created dictionary. It can be run with `python3 numpy
     
     INFILE = INPUT
     START_TIME = time.time()
-    START_TIME_UNPICKLE = time.time()
     with open(INFILE, "rb") as PICKLE_ORIGIN:
         THE_DICT = pickle.load(PICKLE_ORIGIN)
-    print("%s seconds for pickle-loading" % (time.time() - START_TIME_UNPICKLE))
+    print("%s seconds for pickle-loading" % (time.time() - START_TIME))
     START_TIME_EXTRACT = time.time()
     THE_DICT[list(THE_DICT.keys())[random.randrange(len(THE_DICT.keys()))]]
     print("%s seconds for entry query" % (time.time() - START_TIME_EXTRACT))
     print("%s seconds total runtime" % (time.time() - START_TIME))
 
-    11.052722215652466 seconds for pickle-loading
-    0.00023055076599121094 seconds for entry query
-    11.052993059158325 seconds total runtime
+    9.956590414047241 seconds for pickle-loading
+    1.9311904907226562e-05 seconds for entry query
+    9.956644535064697 seconds total runtime
 
 And this is the created pickle-file.
 
