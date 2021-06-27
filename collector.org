@@ -18,7 +18,6 @@
 
       OUTFILE = OUTPUT
       ABSOLUTE_START_TIME = time.time()
-      THE_DICT_NUMPY = {}
       THE_DICT_NUMPY = dict.fromkeys(list(string.ascii_letters))
       print("%s seconds for dict-initiation" % (time.time() - ABSOLUTE_START_TIME))
       START_TIME_DICT_CREATION = time.time()
@@ -34,16 +33,16 @@
       print("%s seconds for pickling" % (time.time() - START_TIME_PICKLE))
       START_TIME_QUERY = time.time()
       THE_DICT_NUMPY['a']
-      print("%s seconds for entry query runtime" % (time.time() - START_TIME_QUERY))
+      print("%s seconds for entry query" % (time.time() - START_TIME_QUERY))
       print("%s seconds total runtime" % (time.time() - ABSOLUTE_START_TIME))
     #+end_src
 
     #+RESULTS: numpy-matrix-dict-creator
-    : 7.867813110351562e-06 seconds for dict-initiation
-    : 1.2438461780548096 seconds for dict-creation
-    : 10.470331907272339 seconds for pickling
-    : 2.6226043701171875e-06 seconds for entry query runtime
-    : 11.714255332946777 seconds total runtime
+    : 7.3909759521484375e-06 seconds for dict-initiation
+    : 1.2408761978149414 seconds for dict-creation
+    : 10.574112176895142 seconds for pickling
+    : 2.384185791015625e-06 seconds for entry query
+    : 11.81505799293518 seconds total runtime
 
     This is the loader for the created dictionary.
 
@@ -64,14 +63,14 @@
       print("%s seconds for pickle-loading" % (time.time() - START_TIME_UNPICKLE_NUMPY))
       START_TIME_EXTRACT = time.time()
       THE_DICT_NUMPY['a']
-      print("%s seconds for entry query runtime" % (time.time() - START_TIME_EXTRACT))
+      print("%s seconds for entry query" % (time.time() - START_TIME_EXTRACT))
       print("%s seconds total runtime" % (time.time() - ABSOLUTE_START_TIME))
     #+end_src
 
     #+RESULTS: numpy-matrix-dict-loader
-    : 8.135382890701294 seconds for pickle-loading
-    : 9.5367431640625e-07 seconds for entry query runtime
-    : 8.135413408279419 seconds total runtime
+    : 8.18607783317566 seconds for pickle-loading
+    : 1.1920928955078125e-06 seconds for entry query
+    : 8.186107873916626 seconds total runtime
 
     And this is the created pickle-file.
 
@@ -83,6 +82,6 @@
     #+end_src
 
     #+RESULTS: check-numpy-matrix-dict-pickle
-    : -rw-r--r-- 1 daniel users 990M 27. Jun 05:10 ../numpy_matrix_dict.p
+    : -rw-r--r-- 1 daniel users 990M 27. Jun 05:31 ../numpy_matrix_dict.p
 
 
