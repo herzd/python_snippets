@@ -6,7 +6,7 @@
  The github-repo itself is set to public for convenience and not for suggesting usage or expectations about contentual stability.
 ** structures
 *** dictionary of matrix-lists
-    Making a dictionary with 52 keys and a list of 100 200x200 numpy-array-objects (matrices with fraction-values). This version requires numpy to be in the environment. If I make a larger value-object (eg 100 300x300, or 1000 100x100 matrices), my laptop runs out of its 8GB memory and kills the process at normal usage with graphical browser on.
+    Making a dictionary with 52 keys and a list of 100 200x200 numpy-array-objects (matrices with fraction-values). This version requires numpy to be in the environment. If I make a larger value-object (eg 100 300x300, or 1000 100x100 matrices), my laptop runs out of its 8GB memory and kills the process at normal usage with graphical browser on. It can be run with ~python3 numpy_matrix_dict_creator.py~.
     #+NAME: numpy-matrix-dict-creator
     #+HEADER: :var OUTPUT="../numpy_matrix_dict.p" 
     #+begin_src python :results output :exports both :tangle "./numpy_matrix_dict_creator.py"
@@ -44,7 +44,7 @@
     : 2.384185791015625e-06 seconds for entry query
     : 11.81505799293518 seconds total runtime
 
-    This is the loader for the created dictionary.
+    This is the loader for the created dictionary. It can be run with ~python3 numpy_matrix_dict_loader.py~.
 
     #+NAME: numpy-matrix-dict-loader
     #+HEADER: :var INPUT="../numpy_matrix_dict.p" 
