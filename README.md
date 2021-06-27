@@ -16,62 +16,73 @@ Making a dictionary with 52 keys and a list of 100 200x200 numpy-array-objects (
     import fractions
     import numpy
     import pickle
+    import random
     import string
     import time
     
+    START_TIME = time.time()
+    KEYLENGTH = KEYLEN
+    KEYCOUNT = NKEYS
+    MATRIXCOUNT = NMATRIX
+    XMATRIX = MATRIXX
+    YMATRIX = MATRIXY
     OUTFILE = OUTPUT
-    ABSOLUTE_START_TIME = time.time()
-    THE_DICT_NUMPY = dict.fromkeys(list(string.ascii_letters))
-    print("%s seconds for dict-initiation" % (time.time() - ABSOLUTE_START_TIME))
+    KEYLIST = []
+    for KEYSTRING in range(KEYCOUNT):
+        KEYLIST.append(''.join(random.choice(string.ascii_letters) \
+    			   for LETTER in range(KEYLENGTH)))
+    THE_DICT = dict.fromkeys(KEYLIST)
+    print("%s seconds for dict-initiation" % (time.time() - START_TIME))
     START_TIME_DICT_CREATION = time.time()
-    for KEY in THE_DICT_NUMPY.keys():
+    for KEY in THE_DICT.keys():
         VALUE_LIST = []
-        for MATRIX in range(100): VALUE_LIST.append(numpy.full((200,200), \
-    							   fractions.Fraction(2,3)))
-        THE_DICT_NUMPY[KEY] = VALUE_LIST
+        for MATRIX in range(MATRIXCOUNT): VALUE_LIST.append(numpy.full((XMATRIX,YMATRIX), \
+    								   fractions.Fraction(2,3)))
+        THE_DICT[KEY] = VALUE_LIST
     print("%s seconds for dict-creation" % (time.time() - START_TIME_DICT_CREATION))
     START_TIME_PICKLE = time.time()
     with open(OUTFILE, "wb") as PICKLE_DESTINATION:
-        pickle.dump(THE_DICT_NUMPY, PICKLE_DESTINATION)
+        pickle.dump(THE_DICT, PICKLE_DESTINATION)
     print("%s seconds for pickling" % (time.time() - START_TIME_PICKLE))
     START_TIME_QUERY = time.time()
-    THE_DICT_NUMPY['a']
-    print("%s seconds for entry query" % (time.time() - START_TIME_QUERY))
-    print("%s seconds total runtime" % (time.time() - ABSOLUTE_START_TIME))
+    THE_DICT[list(THE_DICT.keys())[random.randrange(len(THE_DICT.keys()))]]
+    print("%s seconds for random key query" % (time.time() - START_TIME_QUERY))
+    print("%s seconds total runtime" % (time.time() - START_TIME))
 
-    7.3909759521484375e-06 seconds for dict-initiation
-    1.2408761978149414 seconds for dict-creation
-    10.574112176895142 seconds for pickling
-    2.384185791015625e-06 seconds for entry query
-    11.81505799293518 seconds total runtime
+    0.0002167224884033203 seconds for dict-initiation
+    1.240699291229248 seconds for dict-creation
+    11.510791540145874 seconds for pickling
+    2.4318695068359375e-05 seconds for random key query
+    12.75179147720337 seconds total runtime
 
 This is the loader for the created dictionary. It can be run with `python3 numpy_matrix_dict_loader.py`.
 
     import fractions
     import numpy
     import pickle
+    import random
     import string
     import time
     
     INFILE = INPUT
-    ABSOLUTE_START_TIME = time.time()
-    START_TIME_UNPICKLE_NUMPY = time.time()
+    START_TIME = time.time()
+    START_TIME_UNPICKLE = time.time()
     with open(INFILE, "rb") as PICKLE_ORIGIN:
-        THE_DICT_NUMPY = pickle.load(PICKLE_ORIGIN)
-    print("%s seconds for pickle-loading" % (time.time() - START_TIME_UNPICKLE_NUMPY))
+        THE_DICT = pickle.load(PICKLE_ORIGIN)
+    print("%s seconds for pickle-loading" % (time.time() - START_TIME_UNPICKLE))
     START_TIME_EXTRACT = time.time()
-    THE_DICT_NUMPY['a']
+    THE_DICT[list(THE_DICT.keys())[random.randrange(len(THE_DICT.keys()))]]
     print("%s seconds for entry query" % (time.time() - START_TIME_EXTRACT))
-    print("%s seconds total runtime" % (time.time() - ABSOLUTE_START_TIME))
+    print("%s seconds total runtime" % (time.time() - START_TIME))
 
-    8.18607783317566 seconds for pickle-loading
-    1.1920928955078125e-06 seconds for entry query
-    8.186107873916626 seconds total runtime
+    11.052722215652466 seconds for pickle-loading
+    0.00023055076599121094 seconds for entry query
+    11.052993059158325 seconds total runtime
 
 And this is the created pickle-file.
 
     INFILE=$INPUT
     ls -lha $INFILE
 
-    -rw-r--r-- 1 daniel users 990M 27. Jun 05:31 ../numpy_matrix_dict.p
+    -rw-r--r-- 1 daniel users 990M 28. Jun 01:31 ../numpy_matrix_dict.p
 
