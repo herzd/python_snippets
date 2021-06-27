@@ -73,4 +73,16 @@
     : 1.1920928955078125e-06 seconds for entry query runtime
     : 7.7090020179748535 seconds total runtime
 
+    And this is the created pickle-file.
+
+    #+NAME: check-numpy-matrix-dict-pickle
+    #+HEADER: :var INPUT="../numpy_matrix_dict.p" 
+    #+begin_src shell :results output :exports both
+      INFILE=$INPUT
+      ls -lha $INFILE
+    #+end_src
+
+    #+RESULTS: check-numpy-matrix-dict-pickle
+    : -rw-r--r-- 1 daniel users 990M 27. Jun 04:53 ../numpy_matrix_dict.p
+
 
