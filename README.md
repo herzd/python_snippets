@@ -30,14 +30,14 @@ Making a dictionary with 52 keys and a list of 100 200x200 numpy-array-objects (
     KEYLIST = []
     for KEYSTRING in range(KEYCOUNT):
         KEYLIST.append(''.join(random.choice(string.ascii_letters) \
-    			   for LETTER in range(KEYLENGTH)))
+      			 for LETTER in range(KEYLENGTH)))
     THE_DICT = dict.fromkeys(KEYLIST)
     print("%s seconds for dict-initiation" % (time.time() - START_TIME))
     START_TIME_DICT_CREATION = time.time()
     for KEY in THE_DICT.keys():
         VALUE_LIST = []
         for MATRIX in range(MATRIXCOUNT): VALUE_LIST.append(numpy.full((XMATRIX,YMATRIX), \
-    								   fractions.Fraction(2,3)))
+      								 fractions.Fraction(2,3)))
         THE_DICT[KEY] = VALUE_LIST
     print("%s seconds for dict-creation" % (time.time() - START_TIME_DICT_CREATION))
     START_TIME_PICKLE = time.time()
@@ -49,11 +49,11 @@ Making a dictionary with 52 keys and a list of 100 200x200 numpy-array-objects (
     print("%s seconds for random key query" % (time.time() - START_TIME_QUERY))
     print("%s seconds total runtime" % (time.time() - START_TIME))
 
-    0.0002167224884033203 seconds for dict-initiation
-    1.240699291229248 seconds for dict-creation
-    11.510791540145874 seconds for pickling
-    2.4318695068359375e-05 seconds for random key query
-    12.75179147720337 seconds total runtime
+    0.00024271011352539062 seconds for dict-initiation
+    1.2199208736419678 seconds for dict-creation
+    9.870619773864746 seconds for pickling
+    2.47955322265625e-05 seconds for random key query
+    11.09087085723877 seconds total runtime
 
 This is the loader for the created dictionary. It can be run with `python3 numpy_matrix_dict_loader.py`.
 
@@ -84,4 +84,64 @@ And this is the created pickle-file.
     ls -lha $INFILE
 
     -rw-r--r-- 1 daniel users 990M 28. Jun 01:31 ../numpy_matrix_dict.p
+
+The following is for comparison reasons if the numpy-array-object brings speed enhancements compared to a list-of-lists implementation.
+
+    import fractions
+    import pickle
+    import random
+    import string
+    import time
+    
+    START_TIME = time.time()
+    KEYLENGTH = KEYLEN
+    KEYCOUNT = NKEYS
+    MATRIXCOUNT = NMATRIX
+    XMATRIX = MATRIXX
+    YMATRIX = MATRIXY
+    OUTFILE = OUTPUT
+    KEYLIST = []
+    for KEYSTRING in range(KEYCOUNT):
+        KEYLIST.append(''.join(random.choice(string.ascii_letters) \
+        		       for LETTER in range(KEYLENGTH)))
+    THE_DICT = dict.fromkeys(KEYLIST)
+    print("%s seconds for dict-initiation" % (time.time() - START_TIME))
+    
+    START_TIME_DICT_CREATION = time.time()
+    for KEY in THE_DICT.keys():
+        VALUE_LIST = []
+        for MATRIX_COUNT in range(MATRIXCOUNT):
+            MATRIX = []
+            for ROW in range(YMATRIX):
+                MATRIX_ROW = []
+                for COLUMN in range(XMATRIX):
+                    MATRIX_ROW.append(fractions.Fraction(2,3))
+                MATRIX.append(MATRIX_ROW)
+            VALUE_LIST.append(MATRIX)
+        THE_DICT[KEY] = VALUE_LIST
+    print("%s seconds for dict-creation" % (time.time() - START_TIME_DICT_CREATION))
+    
+    START_TIME_PICKLE = time.time()
+    with open(OUTFILE, "wb") as PICKLE_DESTINATION:
+        pickle.dump(THE_DICT, PICKLE_DESTINATION)
+    print("%s seconds for pickling" % (time.time() - START_TIME_PICKLE))
+    START_TIME_QUERY = time.time()
+    THE_DICT[list(THE_DICT.keys())[random.randrange(len(THE_DICT.keys()))]]
+    print("%s seconds for random key query" % (time.time() - START_TIME_QUERY))
+    print("%s seconds total runtime" % (time.time() - START_TIME))
+
+    0.0002124309539794922 seconds for dict-initiation
+    34.86447238922119 seconds for dict-creation
+    39.02522039413452 seconds for pickling
+    2.47955322265625e-05 seconds for random key query
+    73.88999128341675 seconds total runtime
+
+OK, obviously numpy helps quite a lot. It is not as hopeless as doing the same with sympy-matrices, but still a lot slower than getting the same values into a dict with numpy-matrices. At least with the approach from above. Let's check the filesize.
+
+    INFILE=$INPUT
+    ls -lha $INFILE
+
+    -rw-r--r-- 1 daniel users 239M 28. Jun 21:42 ../list_matrix_dict.p
+
+The creation process is about 35 times slower, the pickling process 4 times. The resulting file itself is only a quarter of the comparable numpy-file.
 
