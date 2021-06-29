@@ -1,4 +1,4 @@
-OUTPUT="../numpy_matrix_dict.p"
+OUTPUT="../matrix_dict_numpy.p"
 KEYLEN=5
 NKEYS=52
 NMATRIX=100
