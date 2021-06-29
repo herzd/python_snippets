@@ -8,8 +8,7 @@
    Making a dictionary of lists of matrices that hold fractioned values.  The program saves both of the initial dict with lists of matrices, and the calculated dictionary of nullspaces to json-files into the directory above the working directory.[fn:1]
 
 *** sympy approach
-    This program creates a python dictionary, which holds lists of matrices as values. The values of the matrices themselves are rationals, represented by tuples of integers. Having created this dictionary, the program calculates the nullspace-vectors of the matrices using sympy.  The results are then stored in another, but same-keyed dictionary as a list of vectors of tuples.
-    The dictionaries are both stored in json-format for reproducability and interoperability with other tools. All dict items are stored in plain python units for performance reasons.
+    This program creates a python dictionary, which holds lists of matrices as values. The values of the matrices themselves are rationals, represented by tuples of integers. Having created this dictionary, the program calculates the nullspace-vectors of the matrices using sympy.  The results are stored in another, but same-keyed dictionary as a list of vectors of tuples. All dict items are stored to file in basic python units for performance reasons.
    #+NAME: matrix-dict-creator-lists-json-nullspace
    #+HEADER: :var OUTPUT="../matrix_dict_lists.json" :var KEYLEN=5 :var NKEYS=2 :var NMATRIX=2 :var MATRIXX=3 :var MATRIXY=4 :var NULLDICT="../matrix_dict_lists_nullspaces.json"
    #+begin_src python :results output :exports both :tangle "./matrix_dict_creator_lists_json_nullspace.py"
