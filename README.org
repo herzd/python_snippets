@@ -4,109 +4,22 @@
 * About
   In this file I organize parts of python code that are of interest to me. org-format is used as it allows me to tangle Python-files from emacs from where I do my version control too. The python-files in this repo are exported from this file.
  The github-repo itself is set to public for convenience and not for suggesting usage or expectations about contentual stability.
-** dictionary of matrix-lists
-   Making a dictionary with 52 keys and a list of 100 200x200 numpy-array-objects (matrices with fraction-values). This version requires numpy to be in the environment. If I make a larger value-object (eg 100 300x300, or 1000 100x100 matrices), my laptop runs out of its 8GB memory and kills the process at normal usage with graphical browser on.
-*** numpy-approach
-    Outside org this script can be run with ~python3 matrix_dict_creator_numpy.py~.
-   #+NAME: matrix-dict-creator-numpy
-   #+HEADER: :var OUTPUT="../matrix_dict_numpy.p" :var KEYLEN=5 :var NKEYS=52 :var NMATRIX=100 :var MATRIXX=200 :var MATRIXY=200 
-   #+begin_src python :results output :exports both :tangle "./matrix_dict_creator_numpy.py"
-import fractions
-import numpy
-import pickle
-import random
-import string
-import time
+** create dictionary with lists of matrices (rational content) and calculation of their nullspace-vectors stored in separate dictionary under the same keys
+   Making a dictionary of lists of matrices that hold fractioned values.  The program saves both of the initial dict with lists of matrices, and the calculated dictionary of nullspaces to json-files into the directory above the working directory.[fn:1]
 
-START_TIME = time.time()
-KEYLENGTH = KEYLEN
-KEYCOUNT = NKEYS
-MATRIXCOUNT = NMATRIX
-XMATRIX = MATRIXX
-YMATRIX = MATRIXY
-OUTFILE = OUTPUT
-KEYLIST = []
-for KEYSTRING in range(KEYCOUNT):
-    KEYLIST.append(''.join(random.choice(string.ascii_letters) \
-  			 for LETTER in range(KEYLENGTH)))
-THE_DICT = dict.fromkeys(KEYLIST)
-print("%s seconds for dict-initiation" % (time.time() - START_TIME))
-START_TIME_DICT_CREATION = time.time()
-for KEY in THE_DICT.keys():
-    VALUE_LIST = []
-    for MATRIX in range(MATRIXCOUNT): VALUE_LIST.append(numpy.full((XMATRIX,YMATRIX), \
-  								 fractions.Fraction(2,3)))
-    THE_DICT[KEY] = VALUE_LIST
-print("%s seconds for dict-creation" % (time.time() - START_TIME_DICT_CREATION))
-START_TIME_PICKLE = time.time()
-with open(OUTFILE, "wb") as PICKLE_DESTINATION:
-    pickle.dump(THE_DICT, PICKLE_DESTINATION)
-print("%s seconds for pickling" % (time.time() - START_TIME_PICKLE))
-START_TIME_QUERY = time.time()
-THE_DICT[list(THE_DICT.keys())[random.randrange(len(THE_DICT.keys()))]]
-print("%s seconds for random key query" % (time.time() - START_TIME_QUERY))
-print("%s seconds total runtime" % (time.time() - START_TIME))
-   #+end_src
-
-   #+RESULTS: matrix-dict-creator-numpy
-   : 0.00021719932556152344 seconds for dict-initiation
-   : 1.2198333740234375 seconds for dict-creation
-   : 9.670838117599487 seconds for pickling
-   : 2.6464462280273438e-05 seconds for random key query
-   : 10.890970945358276 seconds total runtime
-
-   This is the loader for the created dictionary. It can be run with ~python3 matrix_dict_loader_numpy.py~.
-
-   #+NAME: matrix-dict-loader-numpy
-   #+HEADER: :var INPUT="../matrix_dict_numpy.p" 
-   #+begin_src python :results output :exports both :tangle "./matrix_dict_loader_numpy.py"
-import fractions
-import numpy
-import pickle
-import random
-import string
-import time
-
-INFILE = INPUT
-START_TIME = time.time()
-with open(INFILE, "rb") as PICKLE_ORIGIN:
-    THE_DICT = pickle.load(PICKLE_ORIGIN)
-print("%s seconds for pickle-loading" % (time.time() - START_TIME))
-START_TIME_EXTRACT = time.time()
-THE_DICT[list(THE_DICT.keys())[random.randrange(len(THE_DICT.keys()))]]
-print("%s seconds for entry query" % (time.time() - START_TIME_EXTRACT))
-print("%s seconds total runtime" % (time.time() - START_TIME))
-   #+end_src
-
-   #+RESULTS: matrix-dict-loader-numpy
-   : 7.346083402633667 seconds for pickle-loading
-   : 1.8835067749023438e-05 seconds for entry query
-   : 7.3461291790008545 seconds total runtime
-
-   And this is the created pickle-file.
-
-   #+NAME: check-numpy-matrix-dict-pickle
-   #+HEADER: :var INPUT="../matrix_dict_numpy.p" 
-   #+begin_src shell :results output :exports both
-INFILE=$INPUT
-ls -lha $INFILE
-   #+end_src
-
-   #+RESULTS: check-numpy-matrix-dict-pickle
-   : -rw-r--r-- 1 daniel users 990M 28. Jun 22:19 ../matrix_dict_numpy.p
-
-
-*** symbolic approach
-   This is an approach that calculates the nullspaces for all given matrices and returns them under the same key from a second dictionary as a matrix of tuples. sympy is used for the nullspace calculations. All dict items are plain python.  Tuples and sympy-Rationals are interchanged where needed, as storing the sympy-objects in a dictionary did not prove performant.
+*** sympy approach
+    All dict items are plain python. Rational Numbers are represented as tuples of integers for storagein json files. Sympy is used for the nullspace calculation.
    #+NAME: matrix-dict-creator-lists-json-nullspace
-   #+HEADER: :var OUTPUT="../matrix_dict_lists.json" :var KEYLEN=5 :var NKEYS=52 :var NMATRIX=10 :var MATRIXX=200 :var MATRIXY=200 :var NULLDICT="../matrix_dict_lists_nullspaces.json"
+   #+HEADER: :var OUTPUT="../matrix_dict_lists.json" :var KEYLEN=5 :var NKEYS=2 :var NMATRIX=2 :var MATRIXX=3 :var MATRIXY=4 :var NULLDICT="../matrix_dict_lists_nullspaces.json"
    #+begin_src python :results output :exports both :tangle "./matrix_dict_creator_lists_json_nullspace.py"
-import fractions
 import json
-import sympy
+import os
 import random
 import string
 import time
+import sympy
+
+# define values
 
 KEYLENGTH = KEYLEN
 KEYCOUNT = NKEYS
@@ -116,81 +29,128 @@ YMATRIX = MATRIXY
 OUTFILE = OUTPUT
 OUTFILE_NULLDICT = NULLDICT
 
-START_TIME = time.time()
-KEYLIST = []
-for KEYSTRING in range(KEYCOUNT):
-    KEYLIST.append(''.join(random.choice(string.ascii_letters) \
-    		       for LETTER in range(KEYLENGTH)))
-THE_DICT = dict.fromkeys(KEYLIST)
-print("%s seconds for dict-initiation" % (time.time() - START_TIME))
+# define functions
 
-START_TIME_DICT_CREATION = time.time()
-for KEY in THE_DICT.keys():
-    VALUE_LIST = []
-    for MATRIX_COUNT in range(MATRIXCOUNT):
-        MATRIX = []
-        for ROW in range(YMATRIX):
-            MATRIX_ROW = []
-            for COLUMN in range(XMATRIX):
-                MATRIX_ROW.append((2,3))
-            MATRIX.append(MATRIX_ROW)
-        VALUE_LIST.append(MATRIX)
-    THE_DICT[KEY] = VALUE_LIST
-print("%s seconds for dict-creation" % (time.time() - START_TIME_DICT_CREATION))
+def create_keylist(KEYCOUNT,KEYLENGTH):
+    KEYLIST = []
+    for KEYSTRING in range(KEYCOUNT):
+        KEYLIST.append(''.join(random.choice(string.ascii_letters) for LETTER in range(KEYLENGTH)))
 
-START_TIME_JSON = time.time()
-with open(OUTFILE, "w") as JSON_DESTINATION:
-    json.dump(THE_DICT, JSON_DESTINATION)
-print("%s seconds for saving to json" % (time.time() - START_TIME_JSON))
+    return KEYLIST
 
-START_TIME_QUERY = time.time()
-THE_DICT[list(THE_DICT.keys())[random.randrange(len(THE_DICT.keys()))]]
-print("%s seconds for random key query" % (time.time() - START_TIME_QUERY))
 
-START_TIME_NULLDICT = time.time()
-THE_NULL_DICT = dict.fromkeys(KEYLIST)
-for KEY in THE_NULL_DICT.keys():
-    VALUE_LIST = []
-    for MATRIX in THE_DICT[KEY]:
-        NEW_MATRIX = []
-        for ROW in MATRIX:
-            NEW_MATRIX_ROW = []
-            for TUPLE in ROW:
-                NEW_MATRIX_ROW.append(sympy.Rational(int(TUPLE[0]),int(TUPLE[1])))
-            NEW_MATRIX.append(NEW_MATRIX_ROW)
-        NULLSPACES = sympy.Matrix(NEW_MATRIX).nullspace()
-        VALUE_LIST.append(NULLSPACES)
-    THE_NULL_TUPLE_LIST = []
-    for MATRIXLIST in VALUE_LIST:
-        VECTORLIST = []
-        for MATRIX in MATRIXLIST:
-            TUPLED_VALUES = []
-            for VALUE in list(MATRIX):
-                if type(VALUE) == sympy.core.numbers.Rational:
-                    RECOVERED_TUPLE = VALUE.p,VALUE.q
-                else:
-                    RECOVERED_TUPLE = int(VALUE),1
-                TUPLED_VALUES.append(RECOVERED_TUPLE)
-            VECTORLIST.append(TUPLED_VALUES)
-        THE_NULL_TUPLE_LIST.append(VECTORLIST)
-    THE_NULL_DICT[KEY] = THE_NULL_TUPLE_LIST
-print("%s seconds for nullspace-calculation" % (time.time() - START_TIME_NULLDICT))
+def create_matrix_list_dict(KEYLIST, MATRIXCOUNT, XMATRIX, YMATRIX):
+    START_TIME = time.time()
+    INIT_DICT = dict.fromkeys(KEYLIST)
+    for KEY in INIT_DICT.keys():
+        VALUE_LIST = []
+        for MATRIX_COUNT in range(MATRIXCOUNT):
+            MATRIX = []
+            for ROW in range(YMATRIX):
+                MATRIX_ROW = []
+                for COLUMN in range(XMATRIX):
+                    MATRIX_ROW.append((2,3))
+                MATRIX.append(MATRIX_ROW)
+            VALUE_LIST.append(MATRIX)
+        DICT = INIT_DICT
+        DICT[KEY] = VALUE_LIST
+    print("{} seconds for creating dict of matrix lists".format(time.time() - START_TIME))
 
-print("%s seconds total runtime" % (time.time() - START_TIME))
+    return DICT
+
+
+def create_nullspace_dict(KEYLIST, DICT):
+    START_TIME = time.time()
+    THE_NULL_DICT = dict.fromkeys(KEYLIST)
+    for KEY in THE_NULL_DICT.keys():
+        VALUE_LIST = []
+        for MATRIX in DICT[KEY]:
+            NEW_MATRIX = []
+            for ROW in MATRIX:
+                NEW_MATRIX_ROW = []
+                for TUPLE in ROW:
+                    NEW_MATRIX_ROW.append(sympy.Rational(int(TUPLE[0]), int(TUPLE[1])))
+                NEW_MATRIX.append(NEW_MATRIX_ROW)
+            NULLSPACES = sympy.Matrix(NEW_MATRIX).nullspace()
+            VALUE_LIST.append(NULLSPACES)
+        THE_NULL_TUPLE_LIST = []
+        for MATRIXLIST in VALUE_LIST:
+            VECTORLIST = []
+            for MATRIX in MATRIXLIST:
+                TUPLED_VALUES = []
+                for VALUE in list(MATRIX):
+                    if type(VALUE) == "sympy.core.numbers.Rational":
+                        RECOVERED_TUPLE = int(VALUE.p),int(VALUE.q)
+                    else:
+                        RECOVERED_TUPLE = int(VALUE),1
+                    TUPLED_VALUES.append(RECOVERED_TUPLE)
+                VECTORLIST.append(TUPLED_VALUES)
+            THE_NULL_TUPLE_LIST.append(VECTORLIST)
+        THE_NULL_DICT[KEY] = THE_NULL_TUPLE_LIST
+    print("{} seconds for creating dict of nullspace vectors".format(time.time() - START_TIME))
+
+    return THE_NULL_DICT
+
+
+def save_to_json(DICT,OUTFILE):
+    START_TIME = time.time()
+    with open(OUTFILE, "w") as JSON_DESTINATION:
+        json.dump(DICT, JSON_DESTINATION)
+    print("{} seconds for saving dict to json".format(time.time() - START_TIME))
+
+    
+def check_query_time(DICT):
+    START_TIME = time.time()
+    DICT[list(DICT.keys())[random.randrange(len(DICT.keys()))]]
+    print("{} seconds for random key query".format(time.time() - START_TIME))
+
+    
+def check_file_size(FILE):
+    START_TIME = time.time()
+    print("Filesize of {} {} MB".format(FILE,os.path.getsize(FILE)/(1024**2)))
+    print("{} seconds for checking filesize".format(time.time() - START_TIME))
+
+    
+# run program
+
+TOTAL_START_TIME = time.time()
+KEYLIST = create_keylist(KEYCOUNT,KEYLENGTH)
+MATRIX_LIST_DICT = create_matrix_list_dict(KEYLIST, MATRIXCOUNT, XMATRIX, YMATRIX)
+save_to_json(MATRIX_LIST_DICT,OUTFILE)
+check_query_time(MATRIX_LIST_DICT)
+print("displaying dict of matrix lists:")
+print(MATRIX_LIST_DICT)
+NULLSPACE_DICT = create_nullspace_dict(KEYLIST, MATRIX_LIST_DICT)
+save_to_json(NULLSPACE_DICT,OUTFILE_NULLDICT)
+check_query_time(NULLSPACE_DICT)
+print("displaying dict of nullspace vectors from matrix-list-dict")
+print(NULLSPACE_DICT)
+check_file_size(OUTFILE)
+check_file_size(OUTFILE_NULLDICT)
+print("Total program runtime: {} seconds.".format(time.time() - TOTAL_START_TIME))
    #+end_src
 
    #+RESULTS: matrix-dict-creator-lists-json-nullspace
-   : 0.00021791458129882812 seconds for dict-initiation
-   : 2.192533254623413 seconds for dict-creation
-   : 57.554662466049194 seconds for saving to json
-   : 2.6226043701171875e-05 seconds for random key query
-   : 213.80260372161865 seconds for nullspace-calculation
-   : 273.55013060569763 seconds total runtime
-
+   #+begin_example
+   1.5020370483398438e-05 seconds for creating dict of matrix lists
+   0.0003421306610107422 seconds for saving dict to json
+   6.67572021484375e-06 seconds for random key query
+   displaying dict of matrix lists:
+   {'Khbrp': [[[(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)]], [[(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)]]], 'ijTCT': [[[(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)]], [[(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)]]]}
+   0.0012395381927490234 seconds for creating dict of nullspace vectors
+   0.0002193450927734375 seconds for saving dict to json
+   7.152557373046875e-06 seconds for random key query
+   displaying dict of nullspace vectors from matrix-list-dict
+   {'Khbrp': [[[(-1, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1)]], [[(-1, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1)]]], 'ijTCT': [[[(-1, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1)]], [[(-1, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1)]]]}
+   Filesize of ../matrix_dict_lists.json 0.0004253387451171875 MB
+   1.811981201171875e-05 seconds for checking filesize
+   Filesize of ../matrix_dict_lists_nullspaces.json 0.0002346038818359375 MB
+   8.58306884765625e-06 seconds for checking filesize
+   Total program runtime: 0.001996278762817383 seconds.
+   #+end_example
 
    
-   FURTHER: The nullspace-result is a list of sympy-Matrices with one column.  This column contains numbers of the class sympy.core.numbers.Rational and sympy.core.numbers.Integer. Getting all these into integer-tuple-format could need a function.  
+* Footnotes
 
-   
-
+[fn:1] If I scale higher than 52 keys and a list of 100 200x200 numpy-array-objects, my laptop runs out of its 8GB memory and kills the process.
 
