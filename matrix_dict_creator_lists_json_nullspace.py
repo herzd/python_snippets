@@ -2,7 +2,7 @@ OUTPUT="../matrix_dict_lists.json"
 KEYLEN=5
 NKEYS=2
 NMATRIX=2
-MATRIXX=3
+MATRIXX=5
 MATRIXY=4
 NULLDICT="../matrix_dict_lists_nullspaces.json"
 import json
@@ -56,7 +56,7 @@ def create_nullspace_dict(KEYLIST, DICT):
     START_TIME = time.time()
     THE_NULL_DICT = dict.fromkeys(KEYLIST)
     for KEY in THE_NULL_DICT.keys():
-        VALUE_LIST = []
+        NULLSPACE_LIST = []
         for MATRIX in DICT[KEY]:
             NEW_MATRIX = []
             for ROW in MATRIX:
@@ -64,22 +64,21 @@ def create_nullspace_dict(KEYLIST, DICT):
                 for TUPLE in ROW:
                     NEW_MATRIX_ROW.append(sympy.Rational(int(TUPLE[0]), int(TUPLE[1])))
                 NEW_MATRIX.append(NEW_MATRIX_ROW)
-            NULLSPACES = sympy.Matrix(NEW_MATRIX).nullspace()
-            VALUE_LIST.append(NULLSPACES)
-        THE_NULL_TUPLE_LIST = []
-        for MATRIXLIST in VALUE_LIST:
-            VECTORLIST = []
-            for MATRIX in MATRIXLIST:
+            NULLSPACE_LIST.append(sympy.Matrix(NEW_MATRIX).nullspace())
+        NULLSPACE_VECTOR_LIST = []
+        for MATRIXLIST in NULLSPACE_LIST:
+            VECTOR = []
+            for VECTOR_MATRIX in MATRIXLIST:
                 TUPLED_VALUES = []
-                for VALUE in list(MATRIX):
+                for VALUE in VECTOR_MATRIX:
                     if type(VALUE) == "sympy.core.numbers.Rational":
                         RECOVERED_TUPLE = int(VALUE.p),int(VALUE.q)
                     else:
                         RECOVERED_TUPLE = int(VALUE),1
                     TUPLED_VALUES.append(RECOVERED_TUPLE)
-                VECTORLIST.append(TUPLED_VALUES)
-            THE_NULL_TUPLE_LIST.append(VECTORLIST)
-        THE_NULL_DICT[KEY] = THE_NULL_TUPLE_LIST
+                VECTOR.append(TUPLED_VALUES)
+            NULLSPACE_VECTOR_LIST.append(VECTOR)
+        THE_NULL_DICT[KEY] = NULLSPACE_VECTOR_LIST
     print("{} seconds for creating dict of nullspace vectors".format(time.time() - START_TIME))
 
     return THE_NULL_DICT

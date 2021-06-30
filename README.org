@@ -10,7 +10,7 @@
 *** sympy approach
     This program creates a python dictionary, which holds lists of matrices as values. The values of the matrices themselves are rationals, represented by tuples of integers. Having created this dictionary, the program calculates the nullspace-vectors of the matrices using sympy.  The results are stored in another, but same-keyed dictionary as a list of vectors of tuples. All dict items are stored to file in basic python units for performance reasons.
    #+NAME: matrix-dict-creator-lists-json-nullspace
-   #+HEADER: :var OUTPUT="../matrix_dict_lists.json" :var KEYLEN=5 :var NKEYS=2 :var NMATRIX=2 :var MATRIXX=3 :var MATRIXY=4 :var NULLDICT="../matrix_dict_lists_nullspaces.json"
+   #+HEADER: :var OUTPUT="../matrix_dict_lists.json" :var KEYLEN=5 :var NKEYS=2 :var NMATRIX=2 :var MATRIXX=5 :var MATRIXY=4 :var NULLDICT="../matrix_dict_lists_nullspaces.json"
    #+begin_src python :results output :exports both :tangle "./matrix_dict_creator_lists_json_nullspace.py"
 import json
 import os
@@ -63,7 +63,7 @@ def create_nullspace_dict(KEYLIST, DICT):
     START_TIME = time.time()
     THE_NULL_DICT = dict.fromkeys(KEYLIST)
     for KEY in THE_NULL_DICT.keys():
-        VALUE_LIST = []
+        NULLSPACE_LIST = []
         for MATRIX in DICT[KEY]:
             NEW_MATRIX = []
             for ROW in MATRIX:
@@ -71,22 +71,21 @@ def create_nullspace_dict(KEYLIST, DICT):
                 for TUPLE in ROW:
                     NEW_MATRIX_ROW.append(sympy.Rational(int(TUPLE[0]), int(TUPLE[1])))
                 NEW_MATRIX.append(NEW_MATRIX_ROW)
-            NULLSPACES = sympy.Matrix(NEW_MATRIX).nullspace()
-            VALUE_LIST.append(NULLSPACES)
-        THE_NULL_TUPLE_LIST = []
-        for MATRIXLIST in VALUE_LIST:
-            VECTORLIST = []
-            for MATRIX in MATRIXLIST:
+            NULLSPACE_LIST.append(sympy.Matrix(NEW_MATRIX).nullspace())
+        NULLSPACE_VECTOR_LIST = []
+        for MATRIXLIST in NULLSPACE_LIST:
+            VECTOR = []
+            for VECTOR_MATRIX in MATRIXLIST:
                 TUPLED_VALUES = []
-                for VALUE in list(MATRIX):
+                for VALUE in VECTOR_MATRIX:
                     if type(VALUE) == "sympy.core.numbers.Rational":
                         RECOVERED_TUPLE = int(VALUE.p),int(VALUE.q)
                     else:
                         RECOVERED_TUPLE = int(VALUE),1
                     TUPLED_VALUES.append(RECOVERED_TUPLE)
-                VECTORLIST.append(TUPLED_VALUES)
-            THE_NULL_TUPLE_LIST.append(VECTORLIST)
-        THE_NULL_DICT[KEY] = THE_NULL_TUPLE_LIST
+                VECTOR.append(TUPLED_VALUES)
+            NULLSPACE_VECTOR_LIST.append(VECTOR)
+        THE_NULL_DICT[KEY] = NULLSPACE_VECTOR_LIST
     print("{} seconds for creating dict of nullspace vectors".format(time.time() - START_TIME))
 
     return THE_NULL_DICT
@@ -132,21 +131,21 @@ print("Total program runtime: {} seconds.".format(time.time() - TOTAL_START_TIME
 
    #+RESULTS: matrix-dict-creator-lists-json-nullspace
    #+begin_example
-   1.5020370483398438e-05 seconds for creating dict of matrix lists
-   0.0003421306610107422 seconds for saving dict to json
-   6.67572021484375e-06 seconds for random key query
+   1.9073486328125e-05 seconds for creating dict of matrix lists
+   0.0008594989776611328 seconds for saving dict to json
+   3.0279159545898438e-05 seconds for random key query
    displaying dict of matrix lists:
-   {'Khbrp': [[[(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)]], [[(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)]]], 'ijTCT': [[[(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)]], [[(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3)]]]}
-   0.0012395381927490234 seconds for creating dict of nullspace vectors
-   0.0002193450927734375 seconds for saving dict to json
-   7.152557373046875e-06 seconds for random key query
+   {'SZVLg': [[[(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)]], [[(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)]]], 'Batsk': [[[(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)]], [[(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)]]]}
+   0.002424955368041992 seconds for creating dict of nullspace vectors
+   0.0005235671997070312 seconds for saving dict to json
+   2.574920654296875e-05 seconds for random key query
    displaying dict of nullspace vectors from matrix-list-dict
-   {'Khbrp': [[[(-1, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1)]], [[(-1, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1)]]], 'ijTCT': [[[(-1, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1)]], [[(-1, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1)]]]}
-   Filesize of ../matrix_dict_lists.json 0.0004253387451171875 MB
-   1.811981201171875e-05 seconds for checking filesize
-   Filesize of ../matrix_dict_lists_nullspaces.json 0.0002346038818359375 MB
-   8.58306884765625e-06 seconds for checking filesize
-   Total program runtime: 0.001996278762817383 seconds.
+   {'SZVLg': [[[(-1, 1), (1, 1), (0, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (0, 1), (1, 1)]], [[(-1, 1), (1, 1), (0, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (0, 1), (1, 1)]]], 'Batsk': [[[(-1, 1), (1, 1), (0, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (0, 1), (1, 1)]], [[(-1, 1), (1, 1), (0, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (0, 1), (1, 1)]]]}
+   Filesize of ../matrix_dict_lists.json 0.0006694793701171875 MB
+   3.457069396972656e-05 seconds for checking filesize
+   Filesize of ../matrix_dict_lists_nullspaces.json 0.0006847381591796875 MB
+   7.3909759521484375e-06 seconds for checking filesize
+   Total program runtime: 0.004342794418334961 seconds.
    #+end_example
 
    
