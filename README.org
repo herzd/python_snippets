@@ -9,55 +9,56 @@
 
 *** sympy approach
     This program creates a python dictionary, which holds lists of matrices as values. The values of the matrices themselves are rationals, represented by tuples of integers. Having created this dictionary, the program calculates the nullspace-vectors of the matrices using sympy.  The results are stored in another, but same-keyed dictionary as a list of vectors of tuples. All dict items are stored to file in basic python units for performance reasons.
-   #+NAME: matrix-dict-creator-lists-json-nullspace
-   #+HEADER: :var OUTPUT="../matrix_dict_lists.json" :var KEYLEN=5 :var NKEYS=2 :var NMATRIX=2 :var MATRIXX=5 :var MATRIXY=4 :var NULLDICT="../matrix_dict_lists_nullspaces.json"
-   #+begin_src python :results output :exports both :tangle "./matrix_dict_creator_lists_json_nullspace.py"
+   #+NAME: matrix-dict-creator-nullspaces
+   #+HEADER: :var OUTPUT="../matrix_dict_lists.json" :var NKEYS=2 :var NMATRIX=2 :var MATRIXX=5 :var MATRIXY=4 :var NULLDICT="../matrix_dict_nullspaces.json" :var INIT_NUM=2 :var INIT_DENOM=3 :var CPUS=4
+   #+begin_src python :results output :exports both :tangle "./matrix_dict_creator_nullspaces.py"
+import itertools
 import json
+import multiprocessing
 import os
 import random
 import string
 import time
 import sympy
 
+
 # define values
 
-KEYLENGTH = KEYLEN
 KEYCOUNT = NKEYS
 MATRIXCOUNT = NMATRIX
 XMATRIX = MATRIXX
 YMATRIX = MATRIXY
 OUTFILE = OUTPUT
 OUTFILE_NULLDICT = NULLDICT
+INIT_FRACTION_VALUE = INIT_NUM,INIT_DENOM
+CPU_COUNT = CPUS
+
 
 # define functions
 
-def create_keylist(KEYCOUNT,KEYLENGTH):
+def create_keylist(KEYCOUNT, KEYLENGTH = 5):
     KEYLIST = []
     for KEYSTRING in range(KEYCOUNT):
         KEYLIST.append(''.join(random.choice(string.ascii_letters) for LETTER in range(KEYLENGTH)))
-
     return KEYLIST
 
+def create_sample_value_matrix(YMATRIX, XMATRIX=YMATRIX, VALUE=(2,3)):
+    MATRIX = []
+    for ROW in range(YMATRIX):
+        MATRIX_ROW = []
+        for COLUMN in range(XMATRIX):
+            MATRIX_ROW.append(VALUE)
+        MATRIX.append(MATRIX_ROW)
+    return MATRIX
 
-def create_matrix_list_dict(KEYLIST, MATRIXCOUNT, XMATRIX, YMATRIX):
-    START_TIME = time.time()
-    INIT_DICT = dict.fromkeys(KEYLIST)
-    for KEY in INIT_DICT.keys():
-        VALUE_LIST = []
-        for MATRIX_COUNT in range(MATRIXCOUNT):
-            MATRIX = []
-            for ROW in range(YMATRIX):
-                MATRIX_ROW = []
-                for COLUMN in range(XMATRIX):
-                    MATRIX_ROW.append((2,3))
-                MATRIX.append(MATRIX_ROW)
-            VALUE_LIST.append(MATRIX)
-        DICT = INIT_DICT
-        DICT[KEY] = VALUE_LIST
-    print("{} seconds for creating dict of matrix lists".format(time.time() - START_TIME))
-
+def create_matrix_dict(KEYLIST, MATRIX, MATRIXCOUNT):
+    DICT = dict.fromkeys(KEYLIST)
+    for KEY in DICT.keys():
+        VALUE = []
+        for ITEM in range(MATRIXCOUNT):
+            VALUE.append(MATRIX)
+        DICT[KEY] = VALUE
     return DICT
-
 
 def create_nullspace_dict(KEYLIST, DICT):
     START_TIME = time.time()
@@ -90,63 +91,41 @@ def create_nullspace_dict(KEYLIST, DICT):
 
     return THE_NULL_DICT
 
-
 def save_to_json(DICT,OUTFILE):
     START_TIME = time.time()
     with open(OUTFILE, "w") as JSON_DESTINATION:
         json.dump(DICT, JSON_DESTINATION)
     print("{} seconds for saving dict to json".format(time.time() - START_TIME))
-
     
 def check_query_time(DICT):
     START_TIME = time.time()
     DICT[list(DICT.keys())[random.randrange(len(DICT.keys()))]]
     print("{} seconds for random key query".format(time.time() - START_TIME))
-
     
 def check_file_size(FILE):
     START_TIME = time.time()
     print("Filesize of {} {} MB".format(FILE,os.path.getsize(FILE)/(1024**2)))
     print("{} seconds for checking filesize".format(time.time() - START_TIME))
 
-    
-# run program
+def main():
+    START_TIME = time.time()
+    KEYLIST = create_keylist(KEYCOUNT)
+    VALUE_MATRIX = create_sample_value_matrix(YMATRIX)
+    MATRIX_LIST_DICT = create_matrix_dict(KEYLIST, VALUE_MATRIX, MATRIXCOUNT)
+    save_to_json(MATRIX_LIST_DICT,OUTFILE)
+    NULLSPACE_DICT = create_nullspace_dict(KEYLIST, MATRIX_LIST_DICT)
+    save_to_json(NULLSPACE_DICT,OUTFILE_NULLDICT)
+    print("Total program runtime: {} seconds.".format(time.time() - START_TIME))
 
-TOTAL_START_TIME = time.time()
-KEYLIST = create_keylist(KEYCOUNT,KEYLENGTH)
-MATRIX_LIST_DICT = create_matrix_list_dict(KEYLIST, MATRIXCOUNT, XMATRIX, YMATRIX)
-save_to_json(MATRIX_LIST_DICT,OUTFILE)
-check_query_time(MATRIX_LIST_DICT)
-print("displaying dict of matrix lists:")
-print(MATRIX_LIST_DICT)
-NULLSPACE_DICT = create_nullspace_dict(KEYLIST, MATRIX_LIST_DICT)
-save_to_json(NULLSPACE_DICT,OUTFILE_NULLDICT)
-check_query_time(NULLSPACE_DICT)
-print("displaying dict of nullspace vectors from matrix-list-dict")
-print(NULLSPACE_DICT)
-check_file_size(OUTFILE)
-check_file_size(OUTFILE_NULLDICT)
-print("Total program runtime: {} seconds.".format(time.time() - TOTAL_START_TIME))
+if __name__=="__main__":
+    main()
    #+end_src
 
    #+RESULTS: matrix-dict-creator-lists-json-nullspace
-   #+begin_example
-   1.9073486328125e-05 seconds for creating dict of matrix lists
-   0.0008594989776611328 seconds for saving dict to json
-   3.0279159545898438e-05 seconds for random key query
-   displaying dict of matrix lists:
-   {'SZVLg': [[[(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)]], [[(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)]]], 'Batsk': [[[(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)]], [[(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)], [(2, 3), (2, 3), (2, 3), (2, 3), (2, 3)]]]}
-   0.002424955368041992 seconds for creating dict of nullspace vectors
-   0.0005235671997070312 seconds for saving dict to json
-   2.574920654296875e-05 seconds for random key query
-   displaying dict of nullspace vectors from matrix-list-dict
-   {'SZVLg': [[[(-1, 1), (1, 1), (0, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (0, 1), (1, 1)]], [[(-1, 1), (1, 1), (0, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (0, 1), (1, 1)]]], 'Batsk': [[[(-1, 1), (1, 1), (0, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (0, 1), (1, 1)]], [[(-1, 1), (1, 1), (0, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (1, 1), (0, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (1, 1), (0, 1)], [(-1, 1), (0, 1), (0, 1), (0, 1), (1, 1)]]]}
-   Filesize of ../matrix_dict_lists.json 0.0006694793701171875 MB
-   3.457069396972656e-05 seconds for checking filesize
-   Filesize of ../matrix_dict_lists_nullspaces.json 0.0006847381591796875 MB
-   7.3909759521484375e-06 seconds for checking filesize
-   Total program runtime: 0.004342794418334961 seconds.
-   #+end_example
+   : 0.0003917217254638672 seconds for saving dict to json
+   : 0.0013580322265625 seconds for creating dict of nullspace vectors
+   : 0.0003809928894042969 seconds for saving dict to json
+   : Total program runtime: 0.0021975040435791016 seconds.
 
 * TODO in future
   + make use of more CPUs

@@ -1,56 +1,59 @@
 OUTPUT="../matrix_dict_lists.json"
-KEYLEN=5
 NKEYS=2
 NMATRIX=2
 MATRIXX=5
 MATRIXY=4
-NULLDICT="../matrix_dict_lists_nullspaces.json"
+NULLDICT="../matrix_dict_nullspaces.json"
+INIT_NUM=2
+INIT_DENOM=3
+CPUS=4
+import itertools
 import json
+import multiprocessing
 import os
 import random
 import string
 import time
 import sympy
 
+
 # define values
 
-KEYLENGTH = KEYLEN
 KEYCOUNT = NKEYS
 MATRIXCOUNT = NMATRIX
 XMATRIX = MATRIXX
 YMATRIX = MATRIXY
 OUTFILE = OUTPUT
 OUTFILE_NULLDICT = NULLDICT
+INIT_FRACTION_VALUE = INIT_NUM,INIT_DENOM
+CPU_COUNT = CPUS
+
 
 # define functions
 
-def create_keylist(KEYCOUNT,KEYLENGTH):
+def create_keylist(KEYCOUNT, KEYLENGTH = 5):
     KEYLIST = []
     for KEYSTRING in range(KEYCOUNT):
         KEYLIST.append(''.join(random.choice(string.ascii_letters) for LETTER in range(KEYLENGTH)))
-
     return KEYLIST
 
+def create_sample_value_matrix(YMATRIX, XMATRIX=YMATRIX, VALUE=(2,3)):
+    MATRIX = []
+    for ROW in range(YMATRIX):
+        MATRIX_ROW = []
+        for COLUMN in range(XMATRIX):
+            MATRIX_ROW.append(VALUE)
+        MATRIX.append(MATRIX_ROW)
+    return MATRIX
 
-def create_matrix_list_dict(KEYLIST, MATRIXCOUNT, XMATRIX, YMATRIX):
-    START_TIME = time.time()
-    INIT_DICT = dict.fromkeys(KEYLIST)
-    for KEY in INIT_DICT.keys():
-        VALUE_LIST = []
-        for MATRIX_COUNT in range(MATRIXCOUNT):
-            MATRIX = []
-            for ROW in range(YMATRIX):
-                MATRIX_ROW = []
-                for COLUMN in range(XMATRIX):
-                    MATRIX_ROW.append((2,3))
-                MATRIX.append(MATRIX_ROW)
-            VALUE_LIST.append(MATRIX)
-        DICT = INIT_DICT
-        DICT[KEY] = VALUE_LIST
-    print("{} seconds for creating dict of matrix lists".format(time.time() - START_TIME))
-
+def create_matrix_dict(KEYLIST, MATRIX, MATRIXCOUNT):
+    DICT = dict.fromkeys(KEYLIST)
+    for KEY in DICT.keys():
+        VALUE = []
+        for ITEM in range(MATRIXCOUNT):
+            VALUE.append(MATRIX)
+        DICT[KEY] = VALUE
     return DICT
-
 
 def create_nullspace_dict(KEYLIST, DICT):
     START_TIME = time.time()
@@ -83,40 +86,31 @@ def create_nullspace_dict(KEYLIST, DICT):
 
     return THE_NULL_DICT
 
-
 def save_to_json(DICT,OUTFILE):
     START_TIME = time.time()
     with open(OUTFILE, "w") as JSON_DESTINATION:
         json.dump(DICT, JSON_DESTINATION)
     print("{} seconds for saving dict to json".format(time.time() - START_TIME))
-
     
 def check_query_time(DICT):
     START_TIME = time.time()
     DICT[list(DICT.keys())[random.randrange(len(DICT.keys()))]]
     print("{} seconds for random key query".format(time.time() - START_TIME))
-
     
 def check_file_size(FILE):
     START_TIME = time.time()
     print("Filesize of {} {} MB".format(FILE,os.path.getsize(FILE)/(1024**2)))
     print("{} seconds for checking filesize".format(time.time() - START_TIME))
 
-    
-# run program
+def main():
+    START_TIME = time.time()
+    KEYLIST = create_keylist(KEYCOUNT)
+    VALUE_MATRIX = create_sample_value_matrix(YMATRIX)
+    MATRIX_LIST_DICT = create_matrix_dict(KEYLIST, VALUE_MATRIX, MATRIXCOUNT)
+    save_to_json(MATRIX_LIST_DICT,OUTFILE)
+    NULLSPACE_DICT = create_nullspace_dict(KEYLIST, MATRIX_LIST_DICT)
+    save_to_json(NULLSPACE_DICT,OUTFILE_NULLDICT)
+    print("Total program runtime: {} seconds.".format(time.time() - START_TIME))
 
-TOTAL_START_TIME = time.time()
-KEYLIST = create_keylist(KEYCOUNT,KEYLENGTH)
-MATRIX_LIST_DICT = create_matrix_list_dict(KEYLIST, MATRIXCOUNT, XMATRIX, YMATRIX)
-save_to_json(MATRIX_LIST_DICT,OUTFILE)
-check_query_time(MATRIX_LIST_DICT)
-print("displaying dict of matrix lists:")
-print(MATRIX_LIST_DICT)
-NULLSPACE_DICT = create_nullspace_dict(KEYLIST, MATRIX_LIST_DICT)
-save_to_json(NULLSPACE_DICT,OUTFILE_NULLDICT)
-check_query_time(NULLSPACE_DICT)
-print("displaying dict of nullspace vectors from matrix-list-dict")
-print(NULLSPACE_DICT)
-check_file_size(OUTFILE)
-check_file_size(OUTFILE_NULLDICT)
-print("Total program runtime: {} seconds.".format(time.time() - TOTAL_START_TIME))
+if __name__=="__main__":
+    main()
