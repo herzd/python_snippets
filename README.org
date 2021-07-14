@@ -8,9 +8,11 @@
    Making a dictionary with 52 keys and a list of 10 200x200 matrices with rational values. numpy-array-objects (matrices with fraction-values). Then calculate the nullspaces of each matrix. Rational valus are transported as tuples and on demand converted to sympy-rational objects. If I make a larger value-object (eg 100 300x300, or 1000 100x100 matrices), my laptop runs out of its 8GB memory and kills the process at normal usage with graphical browser on. With this specs the two created dictionaries (raw matrices, list of nullspaces of matrices) are about 80GB in json format.
 *** symbolic nullspace calculation (sympy) approach
    This is an approach that calculates the nullspaces for all given matrices and returns them under the same key from a second dictionary as a matrix of tuples. sympy is used for the nullspace calculations. All dict items are plain python.  Tuples and sympy-Rationals are interchanged where needed, as storing the sympy-objects in a dictionary did not prove performant. This code calculates the nullspaces of the individual dictionary keys in parallel, by default using all available cpus.
-   #+NAME: matrix-dict-creator-lists-json-nullspace
+
+   The program can be run with ~python3 a_lot_of_nullspace_matrices.py~.
+   #+NAME: a-lot-of-nullspace-matrices
    #+HEADER: :var OUTPUT="../matrix_dict.json" :var KEYLEN=5 :var NKEYS=52 :var NMATRIX=10 :var MATRIXX=200 :var MATRIXY=200 :var NULLDICT="../matrix_dict_nullspaces.json" :var INIT_NUM=2 :var INIT_DENOM=3 
-   #+begin_src python :results output :exports both :tangle "./matrix_dict_creator_lists_json_nullspace.py"
+   #+begin_src python :results output :exports both :tangle "./a_lot_of_nullspace_matrices.py"
 import functools
 import itertools
 import json
@@ -172,12 +174,4 @@ if __name__=="__main__":
 
    #+end_src
 
-
-
-
-   
-   FURTHER: The nullspace-result is a list of sympy-Matrices with one column.  This column contains numbers of the class sympy.core.numbers.Rational and sympy.core.numbers.Integer. Getting all these into integer-tuple-format could need a function.  
-
-   
-
-
+   #+RESULTS: a-lot-of-nullspace-matrices
