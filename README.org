@@ -1,22 +1,19 @@
 #+OPTIONS: toc:nil
 #+OPTIONS: ^:nil
 
-* About
-  In this file I organize parts of python code that are of interest to me. org-format is used as it allows me to tangle Python-files from emacs from where I do my version control too. The python-files in this repo are exported from this file.
-  The github-repo itself is set to public for convenience and not for suggesting usage or expectations about contentual stability.
-** dictionary of matrix-lists
-   Making a dictionary with 52 keys and a list of 10 200x200 matrices with rational values. numpy-array-objects (matrices with fraction-values). Then calculate the nullspaces of each matrix. Rational valus are transported as tuples and on demand converted to sympy-rational objects. If I make a larger value-object (eg 100 300x300, or 1000 100x100 matrices), my laptop runs out of its 8GB memory and kills the process at normal usage with graphical browser on. With this specs the two created dictionaries (raw matrices, list of nullspaces of matrices) are about 80GB in json format.
-*** symbolic nullspace calculation (sympy) approach
-   This is an approach that calculates the nullspaces for all given matrices and returns them under the same key from a second dictionary as a matrix of tuples. sympy is used for the nullspace calculations. All dict items are plain python.  Tuples and sympy-Rationals are interchanged where needed, as storing the sympy-objects in a dictionary did not prove performant. This code calculates the nullspaces of the individual dictionary keys in parallel, by default using all available cpus.
-   The program can be run with ~python3 a_lot_of_nullspace_matrices.py~.
-**** docstring
-     #+NAME: docstring
-     #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+* dictionary of matrix-lists
+  Making a dictionary with 52 keys and a list of 10 200x200 matrices with rational values. numpy-array-objects (matrices with fraction-values). Then calculate the nullspaces of each matrix. Rational valus are transported as tuples and on demand converted to sympy-rational objects. If I make a larger value-object (eg 100 300x300, or 1000 100x100 matrices), my laptop runs out of its 8GB memory and kills the process at normal usage with graphical browser on. With this specs the two created dictionaries (raw matrices, list of nullspaces of matrices) are about 80GB in json format.
+** symbolic nullspace calculation (sympy) approach
+  This is an approach that calculates the nullspaces for all given matrices and returns them under the same key from a second dictionary as a matrix of tuples. sympy is used for the nullspace calculations. All dict items are plain python.  Tuples and sympy-Rationals are interchanged where needed, as storing the sympy-objects in a dictionary did not prove performant. This code calculates the nullspaces of the individual dictionary keys in parallel, by default using all available cpus.
+  The program can be run with ~python3 a_lot_of_nullspace_matrices.py~.
+*** docstring
+    #+NAME: docstring
+    #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 '''This script creates a dictionary of matrix-lists with rational values, and
 calculates the nullspaces of these matrices. The results are stored in a dictionary
 under the same key. Both dictionaries are saved to json-format'''
-     #+end_src
-**** dependencies
+    #+end_src
+*** dependencies
    #+NAME: imports
    #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 import json
@@ -27,11 +24,11 @@ import string
 import time
 import sympy
 #+end_src
-**** set variables
-     This here is due to my workflow, i pass the variables from orgmode and haven't found a nicer way to do it. Adapt the part above ~#define values#~ to your needs and computational hardware environment.
-     #+NAME: set-variables
-     #+HEADER: :var OUTPUT_DICT="../matrix_dict.json" :var KEYLEN=5 :var NKEYS=52 :var NMATRIX=10 :var MATRIXX=200 :var MATRIXY=200 :var OUTPUT_NULLDICT="../matrix_dict_nullspaces.json" :var INIT_NUM=2 :var INIT_DENOM=3
-     #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+*** set variables
+    This here is due to my workflow, i pass the variables from orgmode and haven't found a nicer way to do it. Adapt the part above ~#define values#~ to your needs and computational hardware environment.
+    #+NAME: set-variables
+    #+HEADER: :var OUTPUT_DICT="../matrix_dict.json" :var KEYLEN=5 :var NKEYS=52 :var NMATRIX=10 :var MATRIXX=200 :var MATRIXY=200 :var OUTPUT_NULLDICT="../matrix_dict_nullspaces.json" :var INIT_NUM=2 :var INIT_DENOM=3
+    #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 # define values
 KEYCOUNT = NKEYS
 KEYLENGTH = KEYLEN
@@ -41,13 +38,13 @@ COL_COUNT = MATRIXX
 VALUE = INIT_NUM,INIT_DENOM
 OUTFILE = OUTPUT_DICT
 OUTFILE_NULLDICT = OUTPUT_NULLDICT
-     #+end_src
-**** functions
-***** interindependent functions
-      Here are the functions, that only depend on the modules imported above.
-****** create_keylist
-       #+NAME: create-keylist
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+    #+end_src
+*** functions
+**** interindependent functions
+     Here are the functions, that only depend on the modules imported above.
+***** create_keylist
+      #+NAME: create-keylist
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def create_keylist(keycount, keylength):
     '''Function that takes two parameters (KEYCOUNT=int, KEYLENGTH=int) and
     returns the created keylist, consisting of random strings.'''
@@ -56,11 +53,11 @@ def create_keylist(keycount, keylength):
         keylist.append(''.join(random.choice(string.ascii_letters)
                                for letter in range(keylength)))
     return keylist
-      #+end_src
+     #+end_src
 
-****** create_sample_value_matrix
-       #+NAME: create-sample-matrix
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+***** create_sample_value_matrix
+      #+NAME: create-sample-matrix
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def create_sample_value_matrix(row_count, col_count, value):
     '''takes a parameter for the matrix' row_count (int), col_count defaults
     to same row_count. value defaults to tuple (2,3). returns matrix (list of lists).'''
@@ -71,11 +68,11 @@ def create_sample_value_matrix(row_count, col_count, value):
             matrix_row.append(value)
         matrix.append(matrix_row)
     return matrix
-       #+end_src
+      #+end_src
 
-****** create_list_of_matrices
-       #+NAME: create-list-of-matrices
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+***** create_list_of_matrices
+      #+NAME: create-list-of-matrices
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def create_list_of_matrices(matrix, matrixcount=5):
     '''takes a matrix (list of lists) and repeates it according to second parameter
     returns the list of matrices'''
@@ -83,21 +80,21 @@ def create_list_of_matrices(matrix, matrixcount=5):
     for to_be_added in range(matrixcount):
         list_of_matrices.append(matrix)
     return list_of_matrices
-       #+end_src
+      #+end_src
 
-****** create_dict
-       #+NAME: create-dict
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+***** create_dict
+      #+NAME: create-dict
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def create_dict(keylist):
     '''returns an empty dictionary from a given keylist'''
     dictionary = {}
     dictionary = dictionary.fromkeys(keylist)
     return dictionary
-       #+end_src
+      #+end_src
 
-****** detuple_and_sympyfy_value_matrix
-       #+NAME: detuple-and-sympyfy-matrix
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+***** detuple_and_sympyfy_value_matrix
+      #+NAME: detuple-and-sympyfy-matrix
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def detuple_and_sympyfy_value_matrix(matrix):
     '''transforms rational values represented as tuples in given matrix
     to sympy.Rational objects for further processing.
@@ -109,11 +106,11 @@ def detuple_and_sympyfy_value_matrix(matrix):
             new_matrix_row.append(sympy.Rational(int(tuple_item[0]), int(tuple_item[1])))
         new_matrix.append(new_matrix_row)
     return new_matrix
-       #+end_src
+      #+end_src
 
-****** calculate_nullspaces_and_retuple_matrix
-       #+NAME: calculate-nullspaces-and-retuple-matrix
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+***** calculate_nullspaces_and_retuple_matrix
+      #+NAME: calculate-nullspaces-and-retuple-matrix
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def calculate_nullspaces_and_retuple_matrix(matrix):
     '''calculates the nullspace vectors of a given matrix
     and returns a list of vectors.'''
@@ -129,42 +126,42 @@ def calculate_nullspaces_and_retuple_matrix(matrix):
             tupled_values.append(recovered_tuple)
         nullspace_vectorlist.append(tupled_values)
     return nullspace_vectorlist
-       #+end_src
+      #+end_src
 
-****** fill_dict
-       #+NAME: fill-dict
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+***** fill_dict
+      #+NAME: fill-dict
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def fill_dict(matrix_dict_multi, key, matrix_list):
     '''returns a dictionary with a list of matrices appended
     to given key. meant to be run within a multiprocessing
     manager that provides the dictionary'''
     matrix_dict_multi[key] = matrix_list
     return matrix_dict_multi
-       #+end_src
+      #+end_src
 
-****** save_to_json
-       #+NAME: save-to-json
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+***** save_to_json
+      #+NAME: save-to-json
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def save_to_json(dictionary,outfile):
     '''saves dictionary to outfile (given as path string). returns nothing '''
     with open(outfile, "w") as json_destination:
         json.dump(dictionary, json_destination)
-       #+end_src
+      #+end_src
 
-****** check_file_size
-       #+NAME: check-file-size
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+***** check_file_size
+      #+NAME: check-file-size
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def check_filesize(filepath):
     '''prints the size of given file (path as string) in MB.
     returns nothing'''
     print("{} filesize {} MB\n".format(filepath,os.path.getsize(filepath)/(1024**2)))
-       #+end_src
+      #+end_src
 
-***** interdependent functions
-      These functions here depend on each other and/or the functions defined above. This is mainly done to collect workflow steps.
-****** calculate_nullspace
-       #+NAME: calculate-nullspace-list
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+**** interdependent functions
+     These functions here depend on each other and/or the functions defined above. This is mainly done to collect workflow steps.
+***** calculate_nullspace
+      #+NAME: calculate-nullspace-list
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def calculate_nullspace_list(matrix_list):
     '''calculates the nullspaces of the matrices in
     a given list of matrices and returns them as a list of list of
@@ -175,21 +172,21 @@ def calculate_nullspace_list(matrix_list):
         calculated_retupled = calculate_nullspaces_and_retuple_matrix(detupled)
         nullspace_list.append(calculated_retupled)
     return nullspace_list
-       #+end_src
-****** calc_nullspaces
-       #+NAME: calculate-nullspaces
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+      #+end_src
+***** calc_nullspaces
+      #+NAME: calculate-nullspaces
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def calc_nullspaces(nullspace_dict_multi, key, matrix_dict_multi):
     '''takes a dictionary with list of matrices and
     returns them as dict with resulting nullspace-vectors. the
     output dictionary is meant to be provided by a multiprocessing manager'''
     nullspace_dict_multi[key] = calculate_nullspace_list(matrix_dict_multi[key])
     return nullspace_dict_multi
-       #+end_src
+      #+end_src
 
-****** main
-       #+NAME: main
-       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+***** main
+      #+NAME: main
+      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 def main():
     '''main procedure using all of above functions. where possible, uses all cpus
     available to the user. prints information to stdout and saves dictionaries
@@ -225,26 +222,50 @@ def main():
     check_filesize(OUTFILE)
     check_filesize(OUTFILE_NULLDICT)
     print("total runtime: {} seconds\n".format(time.time() - start_time))
-	 #+end_src
-**** program execution sugar
-      #+NAME: execution sugar
-      #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
+	#+end_src
+*** program execution sugar
+     #+NAME: execution sugar
+     #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
 # needed for proper wrapping of above's multiprocessing calls
 if __name__=="__main__":
     main()
-      #+end_src
-**** run it
-     #+NAME: a-lot-of-nullspace-matrices
-     #+begin_src shell :results output :exports both
-python3 ./a_lot_of_nullspace_matrices.py
      #+end_src
+*** run it
+    #+NAME: a-lot-of-nullspace-matrices
+    #+begin_src shell :results output :exports both
+python3 ./a_lot_of_nullspace_matrices.py
+    #+end_src
 
-     #+RESULTS: a-lot-of-nullspace-matrices
-     : loaded dict with array of matrices...
-     : 
-     : nullspace calculation time: 58.448784589767456 seconds
-     : 
-     : saved dicts...
-     : 
-     : total runtime: 92.82185339927673 seconds
-     : 
+    #+RESULTS: a-lot-of-nullspace-matrices
+    #+begin_example
+    loading initial dict with lists of matrices...
+
+    starting nullspace calculation...
+
+    nullspace calculation: 58.559420347213745 seconds
+
+    saving dicts...
+
+    ../matrix_dict.json filesize 79.44592666625977 MB
+
+    ../matrix_dict_nullspaces.json filesize 79.0980453491211 MB
+
+    total runtime: 93.11269116401672 seconds
+
+    #+end_example
+*** lint it
+    #+NAME: pylint-a-lot-of-nullspace-matrices
+    #+begin_src shell :results output :exports both
+TEMPVAR=$(pylint ./a_lot_of_nullspace_matrices.py)
+printf "$TEMPVAR\n"
+    #+end_src
+
+    #+RESULTS: pylint-a-lot-of-nullspace-matrices
+    : ************* Module a_lot_of_nullspace_matrices
+    : a_lot_of_nullspace_matrices.py:36:8: W0612: Unused variable 'keystring' (unused-variable)
+    : a_lot_of_nullspace_matrices.py:45:8: W0612: Unused variable 'row' (unused-variable)
+    : a_lot_of_nullspace_matrices.py:47:12: W0612: Unused variable 'column' (unused-variable)
+    : a_lot_of_nullspace_matrices.py:56:8: W0612: Unused variable 'to_be_added' (unused-variable)
+    : 
+    : ------------------------------------------------------------------
+    : Your code has been rated at 9.65/10 (previous run: 9.65/10, +0.00)
