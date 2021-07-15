@@ -12,10 +12,10 @@ import sympy
 
 OUTPUT_DICT="../matrix_dict.json"
 KEYLEN=5
-NKEYS=52
-NMATRIX=10
-MATRIXX=200
-MATRIXY=200
+NKEYS=2
+NMATRIX=3
+MATRIXX=5
+MATRIXY=5
 OUTPUT_NULLDICT="../matrix_dict_nullspaces.json"
 INIT_NUM=2
 INIT_DENOM=3
