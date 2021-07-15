@@ -1,4 +1,3 @@
-#+OPTIONS: toc:nil
 #+OPTIONS: ^:nil
 
 * dictionary of matrix-lists
