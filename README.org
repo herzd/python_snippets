@@ -25,7 +25,7 @@ import time
 import sympy
 #+end_src
 *** set variables
-    This here is due to my workflow, i pass the variables from orgmode and haven't found a nicer way to do it. Adapt the part above ~#define values#~ to your needs and computational hardware environment.
+    This here is due to my workflow, i pass the variables from orgmode and haven't found a nicer way to do it. Adapt the part above ~# define values~ to your needs and computational hardware environment.
     #+NAME: set-variables
     #+HEADER: :var OUTPUT_DICT="../matrix_dict.json" :var KEYLEN=5 :var NKEYS=52 :var NMATRIX=10 :var MATRIXX=200 :var MATRIXY=200 :var OUTPUT_NULLDICT="../matrix_dict_nullspaces.json" :var INIT_NUM=2 :var INIT_DENOM=3
     #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
