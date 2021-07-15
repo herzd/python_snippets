@@ -218,7 +218,6 @@ def main():
     with multiprocessing.Pool() as process_pool:
         process_pool.starmap(save_to_json, [(matrix_dict,OUTFILE),
                                             (nullspace_dict,OUTFILE_NULLDICT)])
-
     check_filesize(OUTFILE)
     check_filesize(OUTFILE_NULLDICT)
     print("total runtime: {} seconds\n".format(time.time() - start_time))
@@ -230,29 +229,6 @@ def main():
 if __name__=="__main__":
     main()
      #+end_src
-*** run it
-    #+NAME: a-lot-of-nullspace-matrices
-    #+begin_src shell :results output :exports both
-python3 ./a_lot_of_nullspace_matrices.py
-    #+end_src
-
-    #+RESULTS: a-lot-of-nullspace-matrices
-    #+begin_example
-    loading initial dict with lists of matrices...
-
-    starting nullspace calculation...
-
-    nullspace calculation: 58.7865526676178 seconds
-
-    saving dicts...
-
-    ../matrix_dict.json filesize 79.44592666625977 MB
-
-    ../matrix_dict_nullspaces.json filesize 79.0980453491211 MB
-
-    total runtime: 93.58024573326111 seconds
-
-    #+end_example
 *** lint it
     #+NAME: pylint-a-lot-of-nullspace-matrices
     #+begin_src shell :results output :exports both
@@ -269,3 +245,26 @@ printf "$TEMPVAR\n"
     : 
     : ------------------------------------------------------------------
     : Your code has been rated at 9.65/10 (previous run: 9.65/10, +0.00)
+*** run it
+    #+NAME: a-lot-of-nullspace-matrices
+    #+begin_src shell :results output :exports both
+python3 ./a_lot_of_nullspace_matrices.py
+    #+end_src
+
+    #+RESULTS: a-lot-of-nullspace-matrices
+    #+begin_example
+    loading initial dict with lists of matrices...
+
+    starting nullspace calculation...
+
+    nullspace calculation: 58.66675019264221 seconds
+
+    saving dicts...
+
+    ../matrix_dict.json filesize 79.44592666625977 MB
+
+    ../matrix_dict_nullspaces.json filesize 79.0980453491211 MB
+
+    total runtime: 93.40924978256226 seconds
+
+    #+end_example

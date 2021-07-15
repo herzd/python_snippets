@@ -157,7 +157,6 @@ def main():
     with multiprocessing.Pool() as process_pool:
         process_pool.starmap(save_to_json, [(matrix_dict,OUTFILE),
                                             (nullspace_dict,OUTFILE_NULLDICT)])
-
     check_filesize(OUTFILE)
     check_filesize(OUTFILE_NULLDICT)
     print("total runtime: {} seconds\n".format(time.time() - start_time))
