@@ -235,6 +235,7 @@ if __name__=="__main__":
     main()
      #+end_src
 *** lint it
+    Here is still work to do, maybe list comprehensions to get rid of these warnings.
     #+NAME: pylint-a-lot-of-nullspace-matrices
     #+begin_src shell :results output :exports both
 TEMPVAR=$(pylint ./a_lot_of_nullspace_matrices.py)
