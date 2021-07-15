@@ -158,7 +158,7 @@ def check_filesize(filepath):
       #+end_src
 
 **** interdependent functions
-     These functions here depend on each other and/or the functions defined above. This is mainly done to collect workflow steps.
+     These functions here depend on each other and/or the functions defined above. This is mainly done to collect workflow steps and ease parallelization.
 ***** calculate_nullspace
       #+NAME: calculate-nullspace-list
       #+begin_src python :tangle "./a_lot_of_nullspace_matrices.py"
@@ -242,7 +242,7 @@ python3 ./a_lot_of_nullspace_matrices.py
 
     starting nullspace calculation...
 
-    nullspace calculation: 58.559420347213745 seconds
+    nullspace calculation: 58.7865526676178 seconds
 
     saving dicts...
 
@@ -250,7 +250,7 @@ python3 ./a_lot_of_nullspace_matrices.py
 
     ../matrix_dict_nullspaces.json filesize 79.0980453491211 MB
 
-    total runtime: 93.11269116401672 seconds
+    total runtime: 93.58024573326111 seconds
 
     #+end_example
 *** lint it
